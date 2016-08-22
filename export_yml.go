@@ -65,17 +65,17 @@ type categoryResponse struct {
 
 type category struct {
 	Name   string
-	Parent uint64
-	ID     uint64
+	Parent uint32
+	ID     uint32
 }
 
-func hash(s string) uint64 {
+func hash(s string) uint32 {
 	if s == "" {
 		return 0
 	}
-	h := fnv.New64a()
+	h := fnv.New32a()
 	h.Write([]byte(s))
-	return h.Sum64()
+	return h.Sum32()
 }
 
 func getCatrories(URL string) ([]category, string) {
@@ -138,11 +138,11 @@ func main() {
 			break
 		}
 		url = nextURL
-		time.Sleep(500)
+		// time.Sleep(500)
 	}
-	catMap := make(map[string]map[string]uint64, len(categories))
+	catMap := make(map[string]map[string]uint32, len(categories))
 	for _, cat := range categories {
-		catMap[cat.Name] = map[string]uint64{"id": cat.ID, "parent": cat.Parent}
+		catMap[cat.Name] = map[string]uint32{"id": cat.ID, "parent": cat.Parent}
 	}
 
 	var products []product
@@ -155,7 +155,7 @@ func main() {
 			break
 		}
 		url = nextURL
-		time.Sleep(1000)
+		// time.Sleep(1000)
 	}
 
 	fmt.Println("Скачивание продуктов завершено, получено", len(products), "позиций")
@@ -170,7 +170,7 @@ func main() {
 	}
 
 	for _, product := range products {
-		var categoryID uint64
+		var categoryID uint32
 		if product.Subcategory != "" {
 			categoryID = catMap[product.Subcategory]["id"]
 		} else {
@@ -180,7 +180,7 @@ func main() {
 			Id:              strconv.FormatUint(product.ID, 10),
 			Name:            product.Name,
 			Available:       product.Available,
-			CategoryId:      categoryID,
+			CategoryId:      int(categoryID),
 			CountryOfOrigin: product.CountryOfOrigin,
 			CurrencyId:      "RUR",
 			Description:     product.Description,
