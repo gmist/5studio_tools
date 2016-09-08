@@ -82,14 +82,14 @@ func getCatrories(URL string) ([]category, string) {
 	fmt.Println("Получение списка категорий", URL)
 	res, err := http.Get(URL)
 	if err != nil {
-		log.Fatal("Ошибка при получении списка товаров по адресу:", URL, err.Error())
+		log.Fatal("Ошибка при получении списка категорий по адресу:", URL, err.Error())
 	}
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
 	var data categoryResponse
 	err = decoder.Decode(&data)
 	if err != nil {
-		log.Fatal("Ошибка декодирования списка товаров по адресу:", URL, err.Error())
+		log.Fatal("Ошибка декодирования списка категорий по адресу:", URL, err.Error())
 	}
 	var categories []category
 	for _, catJSON := range data.Result {
@@ -140,6 +140,7 @@ func main() {
 		url = nextURL
 		// time.Sleep(500)
 	}
+
 	catMap := make(map[string]map[string]uint32, len(categories))
 	for _, cat := range categories {
 		catMap[cat.Name] = map[string]uint32{"id": cat.ID, "parent": cat.Parent}
@@ -166,7 +167,15 @@ func main() {
 	ymlCat.AddCurrency("RUR", "1", 0)
 
 	for _, cat := range categories {
-		ymlCat.AddCategory(int(cat.ID), int(cat.Parent), cat.Name)
+		if cat.Parent == 0 {
+			ymlCat.AddCategory(int(cat.ID), int(cat.Parent), cat.Name)
+		}
+	}
+
+	for _, cat := range categories {
+		if cat.Parent != 0 {
+			ymlCat.AddCategory(int(cat.ID), int(cat.Parent), cat.Name)
+		}
 	}
 
 	for _, product := range products {
