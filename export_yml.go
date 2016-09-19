@@ -30,6 +30,7 @@ type product struct {
 	Barcode         string
 	Price           float64
 	URL             string
+	Leftovers       int     `json:"leftovers"`
 	Category        string  `json:"category_name"`
 	Subcategory     string  `json:"subcategory_name"`
 	CountryOfOrigin string  `json:"country"`
@@ -138,7 +139,7 @@ func main() {
 			break
 		}
 		url = nextURL
-		// time.Sleep(500)
+		time.Sleep(500)
 	}
 
 	catMap := make(map[string]map[string]uint32, len(categories))
@@ -156,7 +157,7 @@ func main() {
 			break
 		}
 		url = nextURL
-		// time.Sleep(1000)
+		time.Sleep(1000)
 	}
 
 	fmt.Println("Скачивание продуктов завершено, получено", len(products), "позиций")
@@ -179,6 +180,10 @@ func main() {
 	}
 
 	for _, product := range products {
+		if product.Leftovers <= 0 {
+			continue
+		}
+
 		var categoryID uint32
 		if product.Subcategory != "" {
 			categoryID = catMap[product.Subcategory]["id"]
