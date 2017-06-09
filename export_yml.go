@@ -1,72 +1,36 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/alehano/goyml"
+	"github.com/gmist/5studio_tools/api"
+	"github.com/gmist/5studio_tools/lib"
 )
-
-func getCatrories(URL string) ([]Category, string) {
-	fmt.Println("Получение списка категорий", URL)
-	res, err := http.Get(URL)
-	if err != nil {
-		log.Fatal("Ошибка при получении списка категорий по адресу:", URL, err.Error())
-	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	var data CategoryResponse
-	err = decoder.Decode(&data)
-	if err != nil {
-		log.Fatal("Ошибка декодирования списка категорий по адресу:", URL, err.Error())
-	}
-	var categories []Category
-	for _, catJSON := range data.Result {
-		categories = append(categories, Category{Name: catJSON.Name, ID: Hash(catJSON.ID), Parent: Hash(catJSON.Parent)})
-	}
-	return categories, data.NextURL
-}
-
-func getProducts(URL string) ([]Product, string) {
-	fmt.Println("Получение списка товаров", URL)
-	res, err := http.Get(URL)
-	if err != nil {
-		log.Fatal("Ошибка при получении списка товаров по адресу:", URL, err.Error())
-	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	var data ProductResponse
-	err = decoder.Decode(&data)
-	if err != nil {
-		log.Fatal("Ошибка декодирования списка товаров по адресу:", URL, err.Error())
-	}
-	return data.Result, data.NextURL
-}
 
 func main() {
 	fmt.Println("Экспорт товаров компании \"Город Игр\" в YML-файл")
 	currentTime := time.Now().Format("2006-01-02-15-04-05")
 
-	_, err := os.Stat(YmlDir)
+	_, err := os.Stat(lib.YmlDir)
 	if os.IsNotExist(err) {
-		err = os.MkdirAll(YmlDir, 0755)
+		err = os.MkdirAll(lib.YmlDir, 0755)
 		if err != nil {
 			log.Fatal("Невозможно создать директорию для экспорта", err.Error())
 		}
 	}
 	fileName := fmt.Sprintf("%s.%s", currentTime, "yml")
-	fileName = filepath.Join(YmlDir, fileName)
+	fileName = filepath.Join(lib.YmlDir, fileName)
 
-	var categories []Category
-	url := CategoriesURL
+	var categories []api.Category
+	url := lib.CategoriesURL
 	for {
-		categoriesChunk, nextURL := getCatrories(url)
+		categoriesChunk, nextURL := api.GetCatrories(url)
 		categories = append(categories, categoriesChunk...)
 		fmt.Printf("Скачено %v категорий\n", len(categories))
 		if nextURL == "" {
@@ -81,10 +45,10 @@ func main() {
 		catMap[cat.Name] = map[string]uint32{"id": cat.ID, "parent": cat.Parent}
 	}
 
-	var products []Product
-	url = ProductsURL
+	var products []api.Product
+	url = lib.ProductsURL
 	for {
-		productsChunk, nextURL := getProducts(url)
+		productsChunk, nextURL := api.GetProducts(url)
 		products = append(products, productsChunk...)
 		fmt.Printf("Скачено %v товаров\n", len(products))
 		if nextURL == "" {

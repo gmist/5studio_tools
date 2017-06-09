@@ -1,4 +1,4 @@
-package main
+package lib
 
 const (
 	ProductsURL   = "http://www.5studio.ru/api/v1/product/"
