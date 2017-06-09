@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/gmist/5studio_tools/lib"
 )
+
+type Image struct {
+	URL  string `json:"image_url"`
+	Type string `json:"image_type"`
+}
 
 type Product struct {
 	ID              uint64
@@ -15,16 +18,16 @@ type Product struct {
 	Barcode         string
 	Price           float64
 	URL             string
-	Leftovers       int         `json:"leftovers"`
-	Category        string      `json:"category_name"`
-	Subcategory     string      `json:"subcategory_name"`
-	CountryOfOrigin string      `json:"country"`
-	Vendor          string      `json:"brand"`
-	Description     string      `json:"description"`
-	SalesNotes      string      `json:"equipment"`
-	Available       bool        `json:"is_available"`
-	VendorCode      string      `json:"catalogue_id"`
-	Pictures        []lib.Image `json:"images"`
+	Leftovers       int     `json:"leftovers"`
+	Category        string  `json:"category_name"`
+	Subcategory     string  `json:"subcategory_name"`
+	CountryOfOrigin string  `json:"country"`
+	Vendor          string  `json:"brand"`
+	Description     string  `json:"description"`
+	SalesNotes      string  `json:"equipment"`
+	Available       bool    `json:"is_available"`
+	VendorCode      string  `json:"catalogue_id"`
+	Pictures        []Image `json:"images"`
 }
 
 type ProductResponse struct {

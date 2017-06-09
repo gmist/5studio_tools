@@ -105,7 +105,7 @@ func main() {
 		offer.AddBarcode(product.Barcode)
 		if len(product.Pictures) > 0 {
 			for _, img := range product.Pictures {
-				offer.AddPicture(img.ImageURL)
+				offer.AddPicture(img.URL)
 			}
 		}
 		ymlCat.AddOffer(offer)
