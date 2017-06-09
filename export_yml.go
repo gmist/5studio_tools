@@ -17,7 +17,7 @@ import (
 const (
 	productsURL   = "http://www.5studio.ru/api/v1/product/"
 	categoriesURL = "http://www.5studio.ru/api/v1/category/"
-	ymlDir        = "yml_exports"
+	ymlDir        = "export_yml"
 )
 
 type image struct {
