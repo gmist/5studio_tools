@@ -14,62 +14,6 @@ import (
 	"github.com/alehano/goyml"
 )
 
-const (
-	productsURL   = "http://www.5studio.ru/api/v1/product/"
-	categoriesURL = "http://www.5studio.ru/api/v1/category/"
-	ymlDir        = "export_yml"
-)
-
-type image struct {
-	ImageURL string `json:"image_url"`
-}
-
-type product struct {
-	ID              uint64
-	Name            string
-	Barcode         string
-	Price           float64
-	URL             string
-	Leftovers       int     `json:"leftovers"`
-	Category        string  `json:"category_name"`
-	Subcategory     string  `json:"subcategory_name"`
-	CountryOfOrigin string  `json:"country"`
-	Vendor          string  `json:"brand"`
-	Description     string  `json:"description"`
-	SalesNotes      string  `json:"equipment"`
-	Available       bool    `json:"is_available"`
-	VendorCode      string  `json:"catalogue_id"`
-	Pictures        []image `json:"images"`
-}
-
-type productResponse struct {
-	Status  string
-	Count   int
-	Now     string
-	NextURL string `json:"next_url"`
-	Result  []product
-}
-
-type categoryJSON struct {
-	Name   string
-	Parent string `json:"root_key,omitempty"`
-	ID     string `json:"key"`
-}
-
-type categoryResponse struct {
-	Status  string
-	Count   int
-	Now     string
-	NextURL string `json:"next_url"`
-	Result  []categoryJSON
-}
-
-type category struct {
-	Name   string
-	Parent uint32
-	ID     uint32
-}
-
 func hash(s string) uint32 {
 	if s == "" {
 		return 0
@@ -79,7 +23,7 @@ func hash(s string) uint32 {
 	return h.Sum32()
 }
 
-func getCatrories(URL string) ([]category, string) {
+func getCatrories(URL string) ([]Category, string) {
 	fmt.Println("Получение списка категорий", URL)
 	res, err := http.Get(URL)
 	if err != nil {
@@ -92,14 +36,14 @@ func getCatrories(URL string) ([]category, string) {
 	if err != nil {
 		log.Fatal("Ошибка декодирования списка категорий по адресу:", URL, err.Error())
 	}
-	var categories []category
+	var categories []Category
 	for _, catJSON := range data.Result {
-		categories = append(categories, category{Name: catJSON.Name, ID: hash(catJSON.ID), Parent: hash(catJSON.Parent)})
+		categories = append(categories, Category{Name: catJSON.Name, ID: hash(catJSON.ID), Parent: hash(catJSON.Parent)})
 	}
 	return categories, data.NextURL
 }
 
-func getProducts(URL string) ([]product, string) {
+func getProducts(URL string) ([]Product, string) {
 	fmt.Println("Получение списка товаров", URL)
 	res, err := http.Get(URL)
 	if err != nil {
@@ -107,7 +51,7 @@ func getProducts(URL string) ([]product, string) {
 	}
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
-	var data productResponse
+	var data ProductResponse
 	err = decoder.Decode(&data)
 	if err != nil {
 		log.Fatal("Ошибка декодирования списка товаров по адресу:", URL, err.Error())
@@ -119,18 +63,18 @@ func main() {
 	fmt.Println("Экспорт товаров компании \"Город Игр\" в YML-файл")
 	currentTime := time.Now().Format("2006-01-02-15-04-05")
 
-	_, err := os.Stat(ymlDir)
+	_, err := os.Stat(YmlDir)
 	if os.IsNotExist(err) {
-		err = os.MkdirAll(ymlDir, 0755)
+		err = os.MkdirAll(YmlDir, 0755)
 		if err != nil {
 			log.Fatal("Невозможно создать директорию для экспорта", err.Error())
 		}
 	}
 	fileName := fmt.Sprintf("%s.%s", currentTime, "yml")
-	fileName = filepath.Join(ymlDir, fileName)
+	fileName = filepath.Join(YmlDir, fileName)
 
-	var categories []category
-	url := categoriesURL
+	var categories []Category
+	url := CategoriesURL
 	for {
 		categoriesChunk, nextURL := getCatrories(url)
 		categories = append(categories, categoriesChunk...)
@@ -147,8 +91,8 @@ func main() {
 		catMap[cat.Name] = map[string]uint32{"id": cat.ID, "parent": cat.Parent}
 	}
 
-	var products []product
-	url = productsURL
+	var products []Product
+	url = ProductsURL
 	for {
 		productsChunk, nextURL := getProducts(url)
 		products = append(products, productsChunk...)
