@@ -36,7 +36,7 @@ type CategoryJSON struct {
 	ID     string `json:"key"`
 }
 
-type categoryResponse struct {
+type CategoryResponse struct {
 	Status  string
 	Count   int
 	Now     string

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"hash/fnv"
 	"log"
 	"net/http"
 	"os"
@@ -14,15 +13,6 @@ import (
 	"github.com/alehano/goyml"
 )
 
-func hash(s string) uint32 {
-	if s == "" {
-		return 0
-	}
-	h := fnv.New32a()
-	h.Write([]byte(s))
-	return h.Sum32()
-}
-
 func getCatrories(URL string) ([]Category, string) {
 	fmt.Println("Получение списка категорий", URL)
 	res, err := http.Get(URL)
@@ -31,14 +21,14 @@ func getCatrories(URL string) ([]Category, string) {
 	}
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
-	var data categoryResponse
+	var data CategoryResponse
 	err = decoder.Decode(&data)
 	if err != nil {
 		log.Fatal("Ошибка декодирования списка категорий по адресу:", URL, err.Error())
 	}
 	var categories []Category
 	for _, catJSON := range data.Result {
-		categories = append(categories, Category{Name: catJSON.Name, ID: hash(catJSON.ID), Parent: hash(catJSON.Parent)})
+		categories = append(categories, Category{Name: catJSON.Name, ID: Hash(catJSON.ID), Parent: Hash(catJSON.Parent)})
 	}
 	return categories, data.NextURL
 }
