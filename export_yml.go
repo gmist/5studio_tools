@@ -37,7 +37,6 @@ func main() {
 			break
 		}
 		url = nextURL
-		time.Sleep(500)
 	}
 
 	catMap := make(map[string]map[string]uint32, len(categories))
@@ -55,7 +54,6 @@ func main() {
 			break
 		}
 		url = nextURL
-		time.Sleep(1000)
 	}
 
 	fmt.Println("Скачивание продуктов завершено, получено", len(products), "позиций")
