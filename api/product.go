@@ -8,9 +8,16 @@ import (
 )
 
 type Image struct {
-	URL  string `json:"image_url"`
-	Type string `json:"image_type"`
+	URL      string `json:"image_url"`
+	Type     int    `json:"image_type"`
+	Priority int    `json:"priority"`
 }
+
+type ByPriority []Image
+
+func (a ByPriority) Len() int           { return len(a) }
+func (a ByPriority) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByPriority) Less(i, j int) bool { return a[i].Priority > a[j].Priority }
 
 type Product struct {
 	ID              uint64

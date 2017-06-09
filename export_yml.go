@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"time"
 
@@ -102,6 +103,7 @@ func main() {
 		}
 		offer.AddBarcode(product.Barcode)
 		if len(product.Pictures) > 0 {
+			sort.Sort(api.ByPriority(product.Pictures))
 			for _, img := range product.Pictures {
 				offer.AddPicture(img.URL)
 			}
