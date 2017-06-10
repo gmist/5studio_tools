@@ -19,7 +19,7 @@ type NameImage struct {
 	URL  string
 }
 
-func downloadImage(image *NameImage) {
+func downloadImage(image NameImage) {
 	fmt.Printf("Скачиваем изображение %s (%s)\n", image.Name, image.URL)
 	resp, err := http.Get(image.URL)
 	if err != nil {
@@ -96,17 +96,17 @@ func main() {
 			}
 		}
 	}
-	var throttle = make(chan int, 3)
+	var throttle = make(chan int, 5)
 	var wg sync.WaitGroup
-	fmt.Println(len(images))
+	fmt.Println("Найдено", len(images), "изображений")
 	wg.Add(len(images))
 	for _, image := range images {
 		throttle <- 1
-		go func(image *NameImage) {
+		go func(image NameImage) {
 			defer wg.Done()
 			downloadImage(image)
 			<-throttle
-		}(&image)
+		}(image)
 	}
 	wg.Wait()
 }
