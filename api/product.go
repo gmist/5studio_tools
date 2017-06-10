@@ -35,6 +35,7 @@ type Product struct {
 	Available       bool    `json:"is_available"`
 	VendorCode      string  `json:"catalogue_id"`
 	Pictures        []Image `json:"images"`
+	ID1C            string  `json:"id_1c"`
 }
 
 type ProductResponse struct {
