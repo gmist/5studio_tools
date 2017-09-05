@@ -25,7 +25,7 @@ func main() {
 			log.Fatal("Невозможно создать директорию для экспорта", err.Error())
 		}
 	}
-	fileName := fmt.Sprintf("%s.%s", currentTime, "yml")
+	fileName := fmt.Sprintf("%s.%s", currentTime, "xml")
 	fileName = filepath.Join(lib.YmlDir, fileName)
 
 	var categories []api.Category
