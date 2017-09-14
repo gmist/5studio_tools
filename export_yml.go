@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/alehano/goyml"
@@ -42,7 +43,7 @@ func main() {
 
 	catMap := make(map[string]map[string]uint32, len(categories))
 	for _, cat := range categories {
-		catMap[cat.Name] = map[string]uint32{"id": cat.ID, "parent": cat.Parent}
+		catMap[strings.ToLower(strings.TrimSpace(cat.Name))] = map[string]uint32{"id": cat.ID, "parent": cat.Parent}
 	}
 
 	var products []api.Product
@@ -66,13 +67,13 @@ func main() {
 
 	for _, cat := range categories {
 		if cat.Parent == 0 {
-			ymlCat.AddCategory(int(cat.ID), int(cat.Parent), cat.Name)
+			ymlCat.AddCategory(int(cat.ID), int(cat.Parent), strings.TrimSpace(cat.Name))
 		}
 	}
 
 	for _, cat := range categories {
 		if cat.Parent != 0 {
-			ymlCat.AddCategory(int(cat.ID), int(cat.Parent), cat.Name)
+			ymlCat.AddCategory(int(cat.ID), int(cat.Parent), strings.TrimSpace(cat.Name))
 		}
 	}
 
@@ -83,9 +84,9 @@ func main() {
 
 		var categoryID uint32
 		if product.Subcategory != "" {
-			categoryID = catMap[product.Subcategory]["id"]
-		} else {
-			categoryID = catMap[product.Category]["id"]
+			categoryID = catMap[strings.ToLower(strings.TrimSpace(product.Subcategory))]["id"]
+		} else if product.Category != "" {
+			categoryID = catMap[strings.ToLower(strings.TrimSpace(product.Category))]["id"]
 		}
 		offer := goyml.Offer{
 			Id:              strconv.FormatUint(product.ID, 10),
