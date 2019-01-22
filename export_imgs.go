@@ -74,26 +74,41 @@ func main() {
 
 	var images []NameImage
 	for _, product := range products {
-		var tmp [3]api.Image
+		var tmp []api.Image
 		for _, img := range product.Pictures {
-			if img.URL == "" {
+			if img.ServeURL == "" {
 				continue
 			}
-			if img.Type == 70 && tmp[0].Type == 0 {
-				tmp[0] = img
-			} else if img.Type == 10 && tmp[1].Type == 0 {
-				tmp[1] = img
-			} else if img.Type == 20 && tmp[2].Type == 0 {
-				tmp[2] = img
-			}
+			tmp = append(tmp, img)
 		}
 		for i, img := range tmp {
-			if img.Type != 0 {
-				var image NameImage
-				image.Name = fmt.Sprintf("%s_%s.jpg", product.ID1C, strconv.Itoa(i))
-				image.URL = fmt.Sprintf("%s=s100", img.URL)
-				images = append(images, image)
+			var image NameImage
+
+			var ext string
+			switch sw := img.ContentType; sw {
+			case "image/jpeg":
+				ext = "jpg"
+			case "image/png":
+				ext = "png"
+			case "image/gif":
+				ext = "gif"
+			case "image/bpm":
+				ext = "bmp"
+			case "image/x-icon":
+				ext = "ico"
+			case "image/tiff":
+				ext = ".tiff"
+			case "image/svg+xml":
+				ext = ".svg"
+			case "image/webp":
+				ext = ".webp"
+			default:
+				ext = "jpg"
 			}
+
+			image.Name = fmt.Sprintf("%s_%s.%s", product.ID1C, strconv.Itoa(i), ext)
+			image.URL = img.ServeURL
+			images = append(images, image)
 		}
 	}
 	var throttle = make(chan int, 5)

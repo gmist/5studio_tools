@@ -8,9 +8,11 @@ import (
 )
 
 type Image struct {
-	URL      string `json:"image_url"`
-	Type     int    `json:"image_type"`
-	Priority int    `json:"priority"`
+	URL         string `json:"image_url"`
+	ServeURL    string `json:"serve_url"`
+	ContentType string `json:"content_type"`
+	Type        int    `json:"image_type"`
+	Priority    int    `json:"priority"`
 }
 
 type ByPriority []Image
