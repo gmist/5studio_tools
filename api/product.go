@@ -25,17 +25,18 @@ type Product struct {
 	Barcode         string
 	Price           float64
 	URL             string
-	Leftovers       int     `json:"leftovers"`
-	Category        string  `json:"category_name"`
-	Subcategory     string  `json:"subcategory_name"`
-	CountryOfOrigin string  `json:"country"`
-	Vendor          string  `json:"brand"`
-	Description     string  `json:"description"`
-	SalesNotes      string  `json:"equipment"`
-	Available       bool    `json:"is_available"`
-	VendorCode      string  `json:"catalogue_id"`
-	Pictures        []Image `json:"images"`
-	ID1C            string  `json:"id_1c"`
+	Leftovers       int             `json:"leftovers"`
+	Category        string          `json:"category_name"`
+	Subcategory     string          `json:"subcategory_name"`
+	CountryOfOrigin string          `json:"country"`
+	Vendor          string          `json:"brand"`
+	Description     string          `json:"description"`
+	SalesNotes      string          `json:"equipment"`
+	Available       bool            `json:"is_available"`
+	VendorCode      string          `json:"catalogue_id"`
+	Pictures        []Image         `json:"images"`
+	ID1C            string          `json:"id_1c"`
+	GoodsCategory   GoodsRuCategory `json:"goods_ru_category"`
 }
 
 type ProductResponse struct {
@@ -47,7 +48,7 @@ type ProductResponse struct {
 }
 
 func GetProducts(URL string) ([]Product, string) {
-	fmt.Println("Получение списка товаров", URL)
+	fmt.Println("\nПолучение списка товаров", URL)
 	res, err := http.Get(URL)
 	if err != nil {
 		log.Fatal("Ошибка при получении списка товаров по адресу:", URL, err.Error())
